@@ -9,18 +9,33 @@ const SearchUser = ({onClose}) =>{
     const [searchUser, setSearchUser] = useState([]);
     const [loading, setLoading] = useState(false);
     const [search, setSearch] = useState("");
-    const handleSearchUser = async() => {
+    const handleSearchUser = async () => {
+    try {
         setLoading(true);
+
         const URL = "http://localhost:5050/api/search-user";
-        const response = await axios.post(URL,{
-            search : search
-        })
-        setLoading(false);
+
+        const response = await axios.post(URL, {
+            search: search
+        });
+
         setSearchUser(response.data.data);
     }
-    useEffect(()=>{
-        handleSearchUser()
-    },[search]);
+    catch (error) {
+        console.log("Error while searching user", error);
+        setSearchUser([]);
+    }
+    finally {
+        setLoading(false);
+    }
+}
+    useEffect(() => {
+    const timer = setTimeout(() => {
+        handleSearchUser();
+    }, 500);
+
+    return () => clearTimeout(timer);
+}, [search]);
     console.log(searchUser);
     return (
         <div className = "fixed top-0 bottom-0 left-0 right-0 bg-slate-700 bg-opacity-40 p-2 z-10">
